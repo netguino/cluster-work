@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: chartmuseum
+    app.kubernetes.io/name: chartmuseum
+    app.kubernetes.io/part-of: argocd
+  namespace: argocd
+  name: argocd-chartmuseum
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: chartmuseum
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: chartmuseum
+    spec:
+      containers:
+      - name: chartmuseum
+        image: chartmuseum/chartmuseum
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: argocd-aws-user
+                key: AWS_ACCESS_KEY_ID
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: argocd-aws-user
+                key: AWS_SECRET_ACCESS_KEY
+          - name: PORT
+            value: '8080'
+          - name: DEBUG
+            value: 'true'
+          - name: STORAGE
+            value: amazon
+          - name: STORAGE_AMAZON_BUCKET
+            value: appfolio-helm
+          - name: STORAGE_AMAZON_PREFIX
+            value: charts
+          - name: STORAGE_AMAZON_REGION
+            value: us-east-2
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: 50Mi
+            cpu: 10m
+          limits:
+            memory: 100Mi
+            cpu: 50m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: chartmuseum
+    app.kubernetes.io/name: chartmuseum
+    app.kubernetes.io/part-of: argocd
+  name: chartmuseum
+  namespace: argocd
+spec:
+  ports:
+  - name: server
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/name: chartmuseum

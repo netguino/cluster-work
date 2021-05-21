@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: control
+  labels:
+    app: control
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: control
+  template:
+    metadata:
+      labels:
+        role: control
+    spec:
+      containers:
+      - image: alpine:latest
+        imagePullPolicy: Always
+        name: control
+        command:
+        - "sleep"
+        args:
+        - "6000000"
+

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echoservergreen
+  labels:
+    app: echoservergreen
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: echoservergreen
+  template:
+    metadata:
+      labels:
+        app: echoservergreen
+    spec:
+      containers:
+      - image: gcr.io/google_containers/echoserver1.10
+        imagePullPolicy: Always
+        name: echoservergreen
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echoservergreen
+spec:
+  type: ClusterIP
+  selector:
+    app: echoservergreen
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+

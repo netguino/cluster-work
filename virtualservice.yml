@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  annotations:
+  name: test
+  namespace: default
+spec:
+  gateways:
+  - appfolio
+  hosts:
+  - '*'
+  http:
+  - route:
+    - destination:
+        host: echoserver
+
